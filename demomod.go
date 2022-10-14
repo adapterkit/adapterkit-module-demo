@@ -1,12 +1,18 @@
 package demomod
 
-import context "context"
+import "context"
 
-type Service struct {
-	UnimplementedDemomodSvcServer
+type service struct {
+	UnimplementedDemomodSvcServer // required by protoc.
+
+	param string
 }
 
-func (svc Service) Sum(ctx context.Context, req *Sum_Request) (*Sum_Result, error) {
+func New(param string) DemomodSvcServer {
+	return &service{param: param}
+}
+
+func (svc service) Sum(ctx context.Context, req *Sum_Request) (*Sum_Result, error) {
 	a := req.GetA()
 	b := req.GetB()
 	sum := a + b
@@ -14,11 +20,11 @@ func (svc Service) Sum(ctx context.Context, req *Sum_Request) (*Sum_Result, erro
 	return &ret, nil
 }
 
-func (svc *Service) EchoStream(stream DemomodSvc_EchoStreamServer) error {
+func (svc *service) EchoStream(stream DemomodSvc_EchoStreamServer) error {
 	panic("not implemented")
 }
 
-func (svc *Service) SayHello(ctx context.Context, _ *Empty) (*HelloResult, error) {
-	ret := HelloResult{Msg: "hello!"}
+func (svc *service) SayHello(ctx context.Context, _ *Empty) (*HelloResult, error) {
+	ret := HelloResult{Msg: "hello! " + svc.param}
 	return &ret, nil
 }
