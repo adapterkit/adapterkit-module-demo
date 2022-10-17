@@ -21,7 +21,17 @@ func (svc service) Sum(ctx context.Context, req *Sum_Request) (*Sum_Result, erro
 }
 
 func (svc *service) EchoStream(stream DemomodSvc_EchoStreamServer) error {
-	panic("not implemented")
+	for {
+		in, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+
+		err = stream.Send(&EchoStream_Output{Reply: in.GetText()})
+		if err != nil {
+			return err
+		}
+	}
 }
 
 func (svc *service) SayHello(ctx context.Context, _ *Empty) (*HelloResult, error) {
